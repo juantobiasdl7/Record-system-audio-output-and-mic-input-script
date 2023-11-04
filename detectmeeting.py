@@ -13,6 +13,8 @@ def is_meeting_in_progress(window_title):
     return any(keyword in window_title for keyword in keywords)
 
 def main_loop():
+    global_count = 0
+
     while True:
         # Get the current time
         current_time = datetime.now()
@@ -20,16 +22,26 @@ def main_loop():
         if current_time.hour >= 18:
             print("Ending monitoring for today.")
             break
-
+        
+        print(global_count)
+        print(current_time)
         # Your existing logic to check for meetings and run the script
         for process in psutil.process_iter(['pid', 'name']):
+            print(process.info['pid'], process.info['name'])
             # Check if Teams or Google Meet is running
-            if process.info['name'] in ("Teams.exe", "GoogleMeet.exe"):
+            if process.info['name'] in ("Teams.exe", "chrome.exe"):
+
+                print("Found Teams or Google Meet-------------")
                 # Loop through all windows titles to find a meeting in progress
-                for window in gw.getWindowsWithTitle(''):
+                all_windows = gw.getWindowsWithTitle('')
+
+                print("All windows: ", all_windows)
+
+                for window in all_windows:
+                    print("ONE windows: ----> ", window.title)
                     if is_meeting_in_progress(window.title):
                         # Run your script and exit loops if a meeting is detected
-                        subprocess.Popen(['path_to_your_script.exe'])
+                        subprocess.Popen(['dist/summarizer.exe'])
                         return
 
         time.sleep(60)  # Wait 60 seconds before checking again
