@@ -7,6 +7,7 @@ import pyaudio
 import sounddevice as sd
 import numpy as np
 import wavio
+import whisper
 
 def is_meeting_in_progress(window_title):
     """
@@ -16,17 +17,10 @@ def is_meeting_in_progress(window_title):
     keywords = ["Microsoft Teams Meeting", "Meet"]  # Add more as needed
     return any(keyword in window_title for keyword in keywords)
 
-def record_audio(mic_device_id=2, stereo_mix_device_id=1, fs=48000, duration=10):
+def record_audio(filename, mic_device_id=2, stereo_mix_device_id=1, fs=48000, duration=10):
     # Global buffers to store the recordings
     mic_buffer = []
     system_buffer = []
-
-    # Get the current date and time
-    now = datetime.now()
-    # Format the date and time to a string suitable for a file name
-    datetime_str = now.strftime("%Y%m%d_%H%M%S")
-    # Create the file name with the date and time
-    filename = f"recordings/output_{datetime_str}.wav"
 
     # Create an interface to PortAudio
     p = pyaudio.PyAudio()
@@ -86,15 +80,23 @@ def main_loop():
         # Flag to indicate if a meeting is in progress
         meeting_in_progress = False
 
-        # Get the current time
-        current_time = datetime.now()
+        # Creating the whisper model to transcribe the audio audio file
+        model = whisper.load_model("base")
+
+        # Get the current date and time
+        now = datetime.now()
+        # Format the date and time to a string suitable for a file name
+        datetime_str = now.strftime("%Y%m%d_%H%M%S")
+        # Create the file name with the date and time
+        filename = f"recordings/output_{datetime_str}.wav"
+
         # If the current time is after 6:00 pm, exit the loop (and the script)
-        if current_time.hour >= 6:
+        if now.hour >= 23:
             print("Ending monitoring for today.")
             break
         
         print(global_count)
-        print(current_time)
+        print(now)
         # Your existing logic to check for meetings and run the script
         for process in psutil.process_iter(['pid', 'name']):
             print(process.info['pid'], process.info['name'])
@@ -116,8 +118,14 @@ def main_loop():
                 
                 if meeting_in_progress:
                     # Script runs because a meeting is detected
-                    record_audio()
-                    print("Meeting detected")
+                    print("Recording starts: ",datetime.now())
+                    record_audio(filename)
+                    print("Recording ends: ",datetime.now())
+                    #time.sleep(2) # Changes ofr 05/11/2023 start from here, I will add the logic to output a .txt file with the transcription of the audio file.
+
+                    # Transcribe the audio file
+                    result = model.transcribe(filename)
+
                     break  
         if not meeting_in_progress:
             print("No meeting detected, waiting 60 seconds...")

@@ -1,6 +1,7 @@
 # Virtual environment
 myenv
 recordings
+dist/recordings
 
 # Ignore all .wav files
 *.wav
