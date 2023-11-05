@@ -187,7 +187,7 @@
  [],
  False,
  False,
- 1699143052,
+ 1699144723,
  [('run.exe',
    'C:\\Users\\juant\\Desktop\\Projects\\summarizer-bot\\myenv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
    'EXECUTABLE')],

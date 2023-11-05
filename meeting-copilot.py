@@ -16,10 +16,17 @@ def is_meeting_in_progress(window_title):
     keywords = ["Microsoft Teams Meeting", "Meet"]  # Add more as needed
     return any(keyword in window_title for keyword in keywords)
 
-def record_audio(mic_device_id=1, stereo_mix_device_id=2, fs=48000, duration=10):
+def record_audio(mic_device_id=2, stereo_mix_device_id=1, fs=48000, duration=10):
     # Global buffers to store the recordings
     mic_buffer = []
     system_buffer = []
+
+    # Get the current date and time
+    now = datetime.now()
+    # Format the date and time to a string suitable for a file name
+    datetime_str = now.strftime("%Y%m%d_%H%M%S")
+    # Create the file name with the date and time
+    filename = f"recordings/output_{datetime_str}.wav"
 
     # Create an interface to PortAudio
     p = pyaudio.PyAudio()
@@ -46,7 +53,7 @@ def record_audio(mic_device_id=1, stereo_mix_device_id=2, fs=48000, duration=10)
     # Start recording from the microphone
     with sd.InputStream(device=mic_device_id, channels=2, callback=mic_callback, samplerate=fs):
         # Start recording from the system audio
-        with sd.InputStream(device=stereo_mix_device_id, channels=1, callback=system_callback, samplerate=fs):
+        with sd.InputStream(device=stereo_mix_device_id, channels=2, callback=system_callback, samplerate=fs):
             # Sleep while the callbacks are called in the background
             sd.sleep(duration * 1000)
 
@@ -63,7 +70,7 @@ def record_audio(mic_device_id=1, stereo_mix_device_id=2, fs=48000, duration=10)
     combined = np.hstack((mic_recording, system_recording))
 
     # Save to file
-    wavio.write("output.wav", combined, fs, sampwidth=2)
+    wavio.write(filename, combined, fs, sampwidth=2)
 
     print("Recording finished!")
 
@@ -82,7 +89,7 @@ def main_loop():
         # Get the current time
         current_time = datetime.now()
         # If the current time is after 6:00 pm, exit the loop (and the script)
-        if current_time.hour >= 19:
+        if current_time.hour >= 6:
             print("Ending monitoring for today.")
             break
         
