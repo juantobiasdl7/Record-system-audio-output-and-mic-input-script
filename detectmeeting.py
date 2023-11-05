@@ -41,7 +41,7 @@ def main_loop():
                     print("ONE windows: ----> ", window.title)
                     if is_meeting_in_progress(window.title):
                         # Run your script and exit loops if a meeting is detected
-                        subprocess.Popen(['dist/summarizer.exe'])
+                        subprocess.Popen(['C:\Users\juant\Desktop\Projects\summarizer-bot\dist\summarizer.exe'])
                         return
 
         time.sleep(60)  # Wait 60 seconds before checking again

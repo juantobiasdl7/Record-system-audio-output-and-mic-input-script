@@ -2,6 +2,7 @@ import sounddevice as sd
 import numpy as np
 import wavio
 import pyaudio
+import subprocess
 
 # Global buffers to store the recordings
 mic_buffer = []
@@ -60,3 +61,4 @@ combined = np.hstack((mic_recording, system_recording))
 wavio.write("output.wav", combined, fs, sampwidth=2)
 
 print("Recording finished!")
+
