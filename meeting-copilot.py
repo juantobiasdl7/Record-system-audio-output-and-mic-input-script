@@ -89,6 +89,8 @@ def main_loop():
         datetime_str = now.strftime("%Y%m%d_%H%M%S")
         # Create the file name with the date and time
         filename = f"recordings/output_{datetime_str}.wav"
+        file_name_without_extension = f"output_{datetime_str}"
+        absolute_path_filename = f"C:/Users/juant/Desktop/Projects/summarizer-bot/{filename}"
 
         # If the current time is after 6:00 pm, exit the loop (and the script)
         if now.hour >= 23:
@@ -121,10 +123,16 @@ def main_loop():
                     print("Recording starts: ",datetime.now())
                     record_audio(filename)
                     print("Recording ends: ",datetime.now())
-                    #time.sleep(2) # Changes ofr 05/11/2023 start from here, I will add the logic to output a .txt file with the transcription of the audio file.
+                    time.sleep(2) # Changes ofr 05/11/2023 start from here, I will add the logic to output a .txt file with the transcription of the audio file.
 
                     # Transcribe the audio file
-                    result = model.transcribe(filename)
+                    result = model.transcribe(absolute_path_filename)
+
+                    # Save the transcription to a .txt file
+                    with open(f"transcripts/{file_name_without_extension}.txt", "w", encoding="utf-8") as file:
+                        file.write(result["text"])
+                    print(f"Transcription for {file_name_without_extension}.txt completed.")
+
 
                     break  
         if not meeting_in_progress:

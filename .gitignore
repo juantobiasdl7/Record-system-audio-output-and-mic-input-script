@@ -2,6 +2,7 @@
 myenv
 recordings
 dist/recordings
+transcripts
 
 # Ignore all .wav files
 *.wav
